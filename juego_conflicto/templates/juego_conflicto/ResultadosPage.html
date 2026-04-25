@@ -1,0 +1,122 @@
+{{ block title }}Ronda {{ ronda }} de {{ total_rondas }} – Resultados{{ endblock }}
+
+{{ block styles }}
+<style>
+  .ganador-badge { font-size:1.1rem; padding:.4rem .9rem; border-radius:.5rem; font-weight:700; }
+  .ganador-azul  { background:#cfe2ff; color:#084298; }
+  .ganador-rojo  { background:#f8d7da; color:#842029; }
+  .ganador-empate{ background:#e2e3e5; color:#383d41; }
+  .frente-row td { vertical-align:middle; }
+  .yo-row { background:#fff3cd !important; }
+</style>
+{{ endblock }}
+
+{{ block content }}
+<div class="container" style="max-width:860px">
+
+  <!-- Resultado de la ronda -->
+  <div class="text-center mb-4">
+    {% if ganador_ronda == 'azul' %}
+      <div class="ganador-badge ganador-azul d-inline-block">🏆 Equipo AZUL gana la ronda {{ ronda }}</div>
+    {% elif ganador_ronda == 'rojo' %}
+      <div class="ganador-badge ganador-rojo d-inline-block">🏆 Equipo ROJO gana la ronda {{ ronda }}</div>
+    {% else %}
+      <div class="ganador-badge ganador-empate d-inline-block">🤝 Empate en la ronda {{ ronda }}</div>
+    {% endif %}
+    {% if equipo_gano %}
+      <div class="mt-2 text-success fw-bold">¡Tu equipo ganó!</div>
+    {% else %}
+      <div class="mt-2 text-danger fw-bold">Tu equipo perdió esta ronda.</div>
+    {% endif %}
+  </div>
+
+  <!-- Frentes -->
+  <h6 class="text-uppercase text-muted mb-2">Resultado por frentes</h6>
+  <table class="table table-bordered table-sm mb-4">
+    <thead class="table-light">
+      <tr>
+        <th>Frente</th>
+        <th class="text-center text-primary">Total Azul</th>
+        <th class="text-center text-danger">Total Rojo</th>
+        <th class="text-center">Ganador</th>
+      </tr>
+    </thead>
+    <tbody class="frente-row">
+      {% for f in frentes_list %}
+      <tr>
+        <td><strong>Frente {{ f.frente }}</strong></td>
+        <td class="text-center">{{ f.total_a }}</td>
+        <td class="text-center">{{ f.total_r }}</td>
+        <td class="text-center">
+          {% if f.ganador == 'azul' %}<span class="badge ganador-azul">✅ Azul</span>
+          {% elif f.ganador == 'rojo' %}<span class="badge ganador-rojo">✅ Rojo</span>
+          {% else %}<span class="badge ganador-empate">🤝 Empate</span>{% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <!-- Tabla equipo propio -->
+  <h6 class="text-uppercase text-muted mb-2">Tu equipo ({{ color_equipo }})</h6>
+  <table class="table table-bordered table-sm mb-4">
+    <thead class="table-light">
+      <tr>
+        <th>Jugador</th><th class="text-center">Frente A</th><th class="text-center">Frente B</th>
+        <th class="text-center">Frente C</th><th class="text-center">Ahorro</th>
+        <th class="text-center">Premio</th><th class="text-center">Ahorro efectivo</th>
+        <th class="text-center fw-bold">Ganancia ronda</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for f in filas_propio %}
+      <tr {% if f.es_yo %}class="yo-row"{% endif %}>
+        <td>{{ f.nombre }}{% if f.es_yo %} <span class="badge bg-warning text-dark">Tú</span>{% endif %}</td>
+        <td class="text-center">{{ f.frente_a }}</td>
+        <td class="text-center">{{ f.frente_b }}</td>
+        <td class="text-center">{{ f.frente_c }}</td>
+        <td class="text-center">{{ f.ahorro }}</td>
+        <td class="text-center">{{ f.premio }}</td>
+        <td class="text-center">{{ f.ahorro_ef }}</td>
+        <td class="text-center fw-bold">{{ f.ganancia }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <!-- Tabla equipo rival -->
+  <h6 class="text-uppercase text-muted mb-2">Equipo rival</h6>
+  <table class="table table-bordered table-sm mb-4">
+    <thead class="table-light">
+      <tr>
+        <th>Jugador</th><th class="text-center">Frente A</th><th class="text-center">Frente B</th>
+        <th class="text-center">Frente C</th><th class="text-center">Ahorro</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for f in filas_rival %}
+      <tr>
+        <td>{{ f.nombre }}</td>
+        <td class="text-center">{{ f.frente_a }}</td>
+        <td class="text-center">{{ f.frente_b }}</td>
+        <td class="text-center">{{ f.frente_c }}</td>
+        <td class="text-center">{{ f.ahorro }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div class="alert alert-secondary">
+    <strong>Tu acumulado hasta ahora:</strong> {{ acumulado }} fichas
+  </div>
+
+  <div class="d-flex justify-content-between align-items-center mt-2">
+    <button type="button" class="btn btn-outline-secondary btn-sm"
+            onclick="document.querySelector('#form').submit()">
+      ⏩ Saltar (debug)
+    </button>
+    {{ next_button }}
+  </div>
+</div>
+{{ endblock }}
+

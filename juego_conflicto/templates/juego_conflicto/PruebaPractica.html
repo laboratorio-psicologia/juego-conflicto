@@ -1,0 +1,289 @@
+{{ block title }}Ronda de Práctica{{ endblock }}
+
+{{ block styles }}
+<style>
+  .ficha-counter { font-size:2rem; font-weight:700; transition:color .3s; }
+  .ficha-counter.ok      { color:#198754; }
+  .ficha-counter.warning { color:#ffc107; }
+  .ficha-counter.danger  { color:#dc3545; }
+  .frente-card { border:2px solid #dee2e6; border-radius:.5rem; padding:1rem; text-align:center; }
+  .frente-card:hover { border-color:#0d6efd; }
+  input[type=number] { text-align:center; font-size:1.3rem; font-weight:600; }
+  .chat-mock { height:160px; overflow-y:auto; border:1px solid #dee2e6;
+               border-radius:.375rem; padding:10px; background:#f8f9fa; }
+  .msg-mock { margin-bottom:8px; }
+  .msg-mock .sender { font-weight:600; font-size:.82rem; color:#6c757d; }
+  .bubble-mock { display:inline-block; padding:4px 10px; border-radius:12px;
+                 background:#e9ecef; max-width:85%; font-size:.92rem; }
+  .bubble-mock.yo { background:#cfe2ff; }
+  .step-badge { width:32px; height:32px; border-radius:50%; display:inline-flex;
+                align-items:center; justify-content:center; font-weight:700;
+                background:#0d6efd; color:#fff; flex-shrink:0; }
+</style>
+{{ endblock }}
+
+{{ block content }}
+<div class="container" style="max-width:800px">
+
+  <div class="alert alert-success mb-4">
+    <h5 class="alert-heading mb-1">🎮 Ronda de Práctica</h5>
+    <p class="mb-0">
+      Esta ronda <strong>no cuenta</strong> para tu puntaje. Es solo para que pruebes
+      la interfaz antes de empezar el juego real. Experimenta con los controles sin
+      preocuparte por el resultado.
+    </p>
+  </div>
+
+  <!-- ── PASO 1: el chat ────────────────────────────────────────────────── -->
+  <div class="d-flex gap-3 align-items-start mb-4">
+    <span class="step-badge mt-1">1</span>
+    <div class="flex-grow-1">
+      <h5 class="mb-1">Así se ve el chat de equipo</h5>
+      <p class="text-muted small mb-2">
+        Tendrás un chat grupal (los 3 ven los mensajes) y chats privados (solo tú y un compañero/a).
+        Se escribe en el campo de abajo y se envía con <kbd>Enter</kbd> o el botón Enviar.
+        El chat tiene un temporizador — cuando llega a 0 pasa automáticamente a la siguiente fase.
+      </p>
+
+      <!-- Mock del chat con tabs funcionales -->
+      <div class="border rounded p-2 bg-white mb-2">
+        <div class="border-bottom mb-2 d-flex gap-1" id="demo-tabs">
+          <button type="button" class="btn btn-sm btn-primary" id="tab-grupo"
+                  onclick="cambiarTabDemo('grupo')">💬 Chat de equipo</button>
+          <button type="button" class="btn btn-sm btn-outline-secondary" id="tab-j2"
+                  onclick="cambiarTabDemo('j2')">🔒 Privado con J2</button>
+          <button type="button" class="btn btn-sm btn-outline-secondary" id="tab-j3"
+                  onclick="cambiarTabDemo('j3')">🔒 Privado con J3</button>
+        </div>
+
+        <!-- Chat grupal -->
+        <div class="chat-mock" id="chat-demo-grupo">
+          <div class="msg-mock">
+            <div class="sender">J2</div>
+            <div class="bubble-mock">¡Hola equipo! ¿Qué frente atacamos primero?</div>
+          </div>
+          <div class="msg-mock">
+            <div class="sender">J3</div>
+            <div class="bubble-mock">Propongo concentrarnos todos en el frente A esta vez.</div>
+          </div>
+          <div class="msg-mock">
+            <div class="sender">{{ nombre_jugador }} (tú)</div>
+            <div class="bubble-mock yo">De acuerdo, pero yo voy a guardar algunas fichas también.</div>
+          </div>
+        </div>
+
+        <!-- Chat privado J2 -->
+        <div class="chat-mock" id="chat-demo-j2" style="display:none;">
+          <div class="msg-mock">
+            <div class="sender">J2</div>
+            <div class="bubble-mock">Oye, en privado: ¿tú también vas al frente A?</div>
+          </div>
+          <div class="msg-mock">
+            <div class="sender">{{ nombre_jugador }} (tú)</div>
+            <div class="bubble-mock yo">Sí, creo que es la mejor opción. Coordinemos ahí los dos.</div>
+          </div>
+        </div>
+
+        <!-- Chat privado J3 -->
+        <div class="chat-mock" id="chat-demo-j3" style="display:none;">
+          <div class="msg-mock">
+            <div class="sender">J3</div>
+            <div class="bubble-mock">Este canal es solo entre tú y J3. J2 no ve estos mensajes.</div>
+          </div>
+        </div>
+
+        <div class="input-group mt-2">
+          <input id="demo-input" type="text" class="form-control form-control-sm"
+                 placeholder="Escribe algo aquí y presiona Enter para probarlo..."
+                 maxlength="300" autocomplete="off">
+          <button type="button" class="btn btn-sm btn-primary" onclick="enviarDemo()">Enviar</button>
+        </div>
+        <small class="text-muted">↑ Prueba los tres canales — cada uno es independiente.</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PASO 2: la decisión ────────────────────────────────────────────── -->
+  <div class="d-flex gap-3 align-items-start mb-4">
+    <span class="step-badge mt-1">2</span>
+    <div class="flex-grow-1">
+      <h5 class="mb-1">Practica la pantalla de decisión</h5>
+      <p class="text-muted small mb-2">
+        En el juego real tendrás <strong>{{ tokens }} fichas</strong> para repartir.
+        Ingresa números en los tres frentes — el ahorro se calcula solo.
+        La suma debe ser exactamente <strong>{{ tokens }}</strong>.
+        Cuando estés listo/a, simplemente avanza con el botón de abajo
+        (<em>aquí las fichas no cuentan</em>).
+      </p>
+
+      <!-- Fichas restantes -->
+      <div class="text-center mb-3">
+        <div class="text-muted small">Fichas disponibles (práctica)</div>
+        <div id="restantes-demo" class="ficha-counter ok">{{ tokens }}</div>
+        <div id="msg-error-demo" class="text-danger small" style="min-height:1.2em;"></div>
+      </div>
+
+      <div class="row g-3 mb-3">
+        <div class="col-md-4">
+          <div class="frente-card">
+            <div class="fw-bold mb-2">⚔ Frente A</div>
+            <input type="number" id="demo_a" class="form-control"
+                   value="0" min="0" max="{{ tokens }}" oninput="actualizarDemo()">
+            <div class="text-muted small mt-1">fichas al frente A</div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="frente-card">
+            <div class="fw-bold mb-2">⚔ Frente B</div>
+            <input type="number" id="demo_b" class="form-control"
+                   value="0" min="0" max="{{ tokens }}" oninput="actualizarDemo()">
+            <div class="text-muted small mt-1">fichas al frente B</div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="frente-card">
+            <div class="fw-bold mb-2">⚔ Frente C</div>
+            <input type="number" id="demo_c" class="form-control"
+                   value="0" min="0" max="{{ tokens }}" oninput="actualizarDemo()">
+            <div class="text-muted small mt-1">fichas al frente C</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mb-3 bg-light">
+        <div class="card-body d-flex align-items-center justify-content-between">
+          <div>
+            <strong>💰 Ahorro personal</strong>
+            <div class="text-muted small">Las fichas que no asignas a frentes quedan aquí.</div>
+          </div>
+          <div>
+            <input type="number" id="demo_ahorro" class="form-control"
+                   style="width:90px" value="{{ tokens }}" readonly>
+          </div>
+        </div>
+      </div>
+
+      <div class="alert alert-info py-2 small">
+        <strong>💡 Prueba esto:</strong> pon 5 en el frente A, 5 en el B y 5 en el C.
+        Verás que el ahorro queda en 0. Luego prueba poner 20 en A — aparecerá un aviso de error.
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PASO 3: castigo ────────────────────────────────────────────────── -->
+  <div class="d-flex gap-3 align-items-start mb-4">
+    <span class="step-badge mt-1">3</span>
+    <div class="flex-grow-1">
+      <h5 class="mb-1">Voto de castigo (opcional)</h5>
+      <p class="text-muted small mb-0">
+        Después de ver los resultados, verás una pantalla como esta.
+        Puedes votar para penalizar a un compañero/a o elegir no votar.
+        Recuerda: votar cuesta <strong>1 ficha</strong>. Solo hay castigo real si
+        <strong>2 de 3</strong> personas votan contra el mismo jugador.
+      </p>
+      <div class="card mt-2 bg-light" style="max-width:400px;">
+        <div class="card-body py-2">
+          <div class="list-group list-group-flush">
+            <label class="list-group-item py-1 small">
+              <input class="form-check-input me-2" type="radio" name="demo_voto" checked>
+              <strong>No voto</strong> – no gasto nada
+            </label>
+            <label class="list-group-item py-1 small">
+              <input class="form-check-input me-2" type="radio" name="demo_voto">
+              Castigar a J2 (me cuesta 1 ficha)
+            </label>
+            <label class="list-group-item py-1 small">
+              <input class="form-check-input me-2" type="radio" name="demo_voto">
+              Castigar a J3 (me cuesta 1 ficha)
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Listo ──────────────────────────────────────────────────────────── -->
+  <div class="alert alert-primary">
+    <strong>¿Todo claro?</strong> Cuando hagas clic en "Estoy listo/a", comenzará el
+    cuestionario inicial y luego el juego real. ¡Buena suerte!
+  </div>
+
+  <div class="d-flex justify-content-between align-items-center">
+    <span class="text-muted small">Ronda de práctica — sin puntaje</span>
+    <div class="d-flex gap-2">
+      <button type="button" class="btn btn-outline-secondary btn-sm"
+              onclick="document.querySelector('#form').submit()">⏩ Saltar (debug)</button>
+      {{ next_button }}
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const TOKENS_DEMO = {{ tokens }};
+  let canalDemo = 'grupo';
+
+  // ── Tab switching ──────────────────────────────────────────────────────────
+  function cambiarTabDemo(canal) {
+    canalDemo = canal;
+    // Esconder todas las cajas
+    ['grupo','j2','j3'].forEach(c => {
+      document.getElementById('chat-demo-' + c).style.display = 'none';
+    });
+    document.getElementById('chat-demo-' + canal).style.display = 'block';
+    // Resaltar tab activo
+    document.getElementById('tab-grupo').className = 'btn btn-sm btn-outline-secondary';
+    document.getElementById('tab-j2').className    = 'btn btn-sm btn-outline-secondary';
+    document.getElementById('tab-j3').className    = 'btn btn-sm btn-outline-secondary';
+    document.getElementById('tab-' + canal).className = 'btn btn-sm btn-primary';
+    // Scroll al fondo
+    const box = document.getElementById('chat-demo-' + canal);
+    box.scrollTop = box.scrollHeight;
+  }
+
+  // ── Enviar en el canal activo ──────────────────────────────────────────────
+  function enviarDemo() {
+    const inp  = document.getElementById('demo-input');
+    const text = inp.value.trim();
+    if (!text) return;
+    inp.value = '';
+    const safe = text.replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    const box  = document.getElementById('chat-demo-' + canalDemo);
+    const div  = document.createElement('div');
+    div.className = 'msg-mock';
+    div.innerHTML = `<div class="sender">{{ nombre_jugador }} (tú)</div>
+                     <div class="bubble-mock yo">${safe}</div>`;
+    box.appendChild(div);
+    box.scrollTop = box.scrollHeight;
+  }
+
+  // ── Contador de fichas ─────────────────────────────────────────────────────
+  function actualizarDemo() {
+    const a = parseInt(document.getElementById('demo_a').value) || 0;
+    const b = parseInt(document.getElementById('demo_b').value) || 0;
+    const c = parseInt(document.getElementById('demo_c').value) || 0;
+    const usados = a + b + c;
+    const rest   = TOKENS_DEMO - usados;
+    const el     = document.getElementById('restantes-demo');
+    const err    = document.getElementById('msg-error-demo');
+
+    document.getElementById('demo_ahorro').value = Math.max(0, rest);
+    el.textContent = Math.max(0, rest);
+
+    if (rest < 0) {
+      el.className = 'ficha-counter danger';
+      err.textContent = `¡Te pasas por ${-rest} ficha(s)! Reduce algún frente.`;
+    } else if (rest === 0) {
+      el.className = 'ficha-counter ok';
+      err.textContent = '';
+    } else {
+      el.className = 'ficha-counter warning';
+      err.textContent = `Quedan ${rest} ficha(s) sin asignar — irán al ahorro.`;
+    }
+  }
+
+  document.getElementById('demo-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); enviarDemo(); }
+  });
+</script>
+{{ endblock }}

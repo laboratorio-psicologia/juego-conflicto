@@ -1,0 +1,133 @@
+{{ block title }}Fin del Juego{{ endblock }}
+
+{{ block content }}
+<div class="container" style="max-width:740px">
+
+  <div class="text-center mb-4">
+    <h3>🎉 ¡El juego ha terminado!</h3>
+    <p class="lead">Gracias por participar, <strong>{{ nombre_jugador }}</strong> (Equipo {{ color_equipo }}).</p>
+  </div>
+
+  <!-- ── Resultado de la sesión ─────────────────────────────────────────── -->
+  {% if mi_equipo_gana %}
+  <div class="card border-success mb-4">
+    <div class="card-header bg-success text-white fw-bold fs-5">
+      🏆 Equipo {{ color_equipo }} ganó la sesión — {{ azul_wins }} rondas Azul · {{ rojo_wins }} rondas Rojo
+    </div>
+    <div class="card-body">
+      <p class="mb-2">
+        Tu equipo <strong>entra al sorteo</strong>. El número de tickets que recibirás
+        depende de dos factores que ya puedes ver:
+      </p>
+      <div class="row g-2">
+        <div class="col-md-6">
+          <div class="card border-primary h-100">
+            <div class="card-body py-2">
+              <div class="small text-muted">① Puntaje total de tu equipo</div>
+              <div class="fs-4 fw-bold text-primary">{{ total_equipo }} fichas</div>
+              <div class="small text-muted">
+                Determina el <strong>ranking de tu equipo</strong> entre todos los
+                equipos ganadores de todas las sesiones. Más puntaje = mejor posición = más tickets.
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card border-warning h-100">
+            <div class="card-body py-2">
+              <div class="small text-muted">② Tu posición dentro del equipo</div>
+              <div class="fs-4 fw-bold text-warning">{{ acumulado_final }} fichas</div>
+              <div class="small text-muted">
+                Determina <strong>tu proporción</strong> de los tickets que reciba
+                tu equipo. Más fichas individuales = mayor porcentaje.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Ranking dentro del equipo ─────────────────────────────────────── -->
+  <h6 class="text-uppercase text-muted mb-2">Tu posición dentro del equipo {{ color_equipo }}</h6>
+  <table class="table table-bordered table-sm mb-4">
+    <thead class="table-light">
+      <tr>
+        <th>Lugar</th>
+        <th>Jugador</th>
+        <th class="text-center">Fichas acumuladas</th>
+        <th class="text-center">% de los tickets del equipo</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for f in ranking_equipo %}
+      <tr {% if f.es_yo %}class="table-warning fw-bold"{% endif %}>
+        <td>{{ forloop.counter }}°</td>
+        <td>{{ f.nombre }}{% if f.es_yo %} <span class="badge bg-warning text-dark">Tú</span>{% endif %}</td>
+        <td class="text-center">{{ f.acumulado }}</td>
+        <td class="text-center">{{ f.porcentaje }}%</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div class="alert alert-info small mb-4">
+    <strong>🎟️ ¿Cuántos tickets exactamente?</strong><br>
+    Los tickets se calculan una vez finalizadas <em>todas</em> las sesiones del estudio,
+    cuando se conoce el ranking completo de equipos ganadores. El/la investigador/a
+    te comunicará el resultado del sorteo al terminar la investigación.
+  </div>
+
+  {% else %}
+  <!-- ── Equipo perdedor ────────────────────────────────────────────────── -->
+  <div class="card border-danger mb-4">
+    <div class="card-header bg-danger text-white fw-bold fs-5">
+      Equipo {{ color_equipo }} perdió la sesión — {{ azul_wins }} rondas Azul · {{ rojo_wins }} rondas Rojo
+    </div>
+    <div class="card-body">
+      <p class="mb-0">
+        Lamentablemente tu equipo <strong>no entra al sorteo</strong>.
+        Solo los equipos que ganan su sesión participan en el sorteo final.
+      </p>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- ── Fichas personales ──────────────────────────────────────────────── -->
+  <div class="alert alert-secondary mb-4">
+    <strong>Tus fichas acumuladas en total:</strong> {{ acumulado_final }}
+  </div>
+
+  <!-- ── Historial por rondas ───────────────────────────────────────────── -->
+  <h6 class="text-uppercase text-muted mb-2">Resumen por rondas</h6>
+  <table class="table table-bordered table-sm mb-4">
+    <thead class="table-light">
+      <tr>
+        <th>Ronda</th>
+        <th class="text-center">Ganador</th>
+        <th class="text-center">Tu ganancia</th>
+        <th class="text-center">¿Fuiste castigado?</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for h in historial %}
+      <tr>
+        <td>{{ h.ronda }}</td>
+        <td class="text-center">
+          {% if h.ganador == 'azul' %}<span class="badge" style="background:#cfe2ff;color:#084298">Azul</span>
+          {% elif h.ganador == 'rojo' %}<span class="badge" style="background:#f8d7da;color:#842029">Rojo</span>
+          {% else %}<span class="badge bg-secondary">Empate</span>{% endif %}
+        </td>
+        <td class="text-center">{{ h.ganancia }}</td>
+        <td class="text-center">{% if h.fue_castigado %}⚠️ Sí{% else %}—{% endif %}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div class="alert alert-light border mt-3">
+    Por favor espera las instrucciones del/la investigador/a para conocer el resultado del sorteo.
+  </div>
+
+</div>
+{{ endblock }}

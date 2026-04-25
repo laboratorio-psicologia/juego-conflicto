@@ -1,0 +1,14 @@
+# oTree / Django
+db.sqlite3
+__pycache__/
+*.pyc
+*.pyo
+.env
+staticfiles/
+_static/
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.DS_Store

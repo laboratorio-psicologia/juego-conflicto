@@ -1,0 +1,102 @@
+{{ block title }}Cuestionario de Personalidad{{ endblock }}
+
+{{ block styles }}
+<style>
+  .likert4-row { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-top:6px; }
+  .likert4-row input[type=radio] { display:none; }
+  .likert4-row label {
+    width:40px; height:40px; display:flex; align-items:center; justify-content:center;
+    border:2px solid #dee2e6; border-radius:50%; cursor:pointer; font-weight:600;
+    transition:all .15s;
+  }
+  .likert4-row input[type=radio]:checked + label { background:#0d6efd; color:#fff; border-color:#0d6efd; }
+  .likert4-row label:hover { border-color:#0d6efd; color:#0d6efd; }
+  .item-row { padding: 10px 0; border-bottom: 1px solid #f0f0f0; }
+</style>
+{{ endblock }}
+
+{{ block content }}
+<div class="container" style="max-width:720px">
+
+  <p class="lead">
+    Las siguientes frases describen cómo te sientes o te comportas <strong>en general</strong>.
+    Indica con qué frecuencia se aplica cada frase a ti.
+  </p>
+
+  <form method="post" id="staxi-form">
+
+    {% for grupo in grupos %}
+    <div class="card mb-4">
+      <div class="card-header fw-bold">{{ grupo.titulo }}</div>
+      <div class="card-body">
+        <p class="text-muted small mb-3">{{ grupo.escala }}</p>
+
+        {% for item in grupo.lista %}
+        <div class="item-row">
+          <div class="mb-1">{{ item.etiqueta }}</div>
+          <div class="likert4-row">
+            <span class="text-muted small me-1">Casi nunca</span>
+            <span>
+              <input type="radio" name="{{ item.nombre }}" id="{{ item.nombre }}_1" value="1" required>
+              <label for="{{ item.nombre }}_1">1</label>
+            </span>
+            <span>
+              <input type="radio" name="{{ item.nombre }}" id="{{ item.nombre }}_2" value="2">
+              <label for="{{ item.nombre }}_2">2</label>
+            </span>
+            <span>
+              <input type="radio" name="{{ item.nombre }}" id="{{ item.nombre }}_3" value="3">
+              <label for="{{ item.nombre }}_3">3</label>
+            </span>
+            <span>
+              <input type="radio" name="{{ item.nombre }}" id="{{ item.nombre }}_4" value="4">
+              <label for="{{ item.nombre }}_4">4</label>
+            </span>
+            <span class="text-muted small ms-1">Casi siempre</span>
+          </div>
+        </div>
+        {% endfor %}
+
+      </div>
+    </div>
+    {% endfor %}
+
+    <div class="d-flex gap-2 mt-3">
+      {{ next_button }}
+      <button type="button" class="btn btn-outline-secondary" onclick="llenarAleatorio()">🎲 Aleatorio (debug)</button>
+    </div>
+  </form>
+</div>
+
+<script>
+  // Validar que todos los ítems estén respondidos antes de avanzar
+  document.getElementById('staxi-form').addEventListener('submit', function(e) {
+    const grupos = document.querySelectorAll('[name]');
+    const nombres = new Set([...grupos].map(el => el.name));
+    let faltantes = [];
+    nombres.forEach(nombre => {
+      const marcado = document.querySelector(`input[name="${nombre}"]:checked`);
+      if (!marcado) faltantes.push(nombre);
+    });
+    if (faltantes.length > 0) {
+      e.preventDefault();
+      alert(`Por favor responde todos los ítems antes de continuar. Faltan ${faltantes.length} respuesta(s).`);
+    }
+  });
+</script>
+{{ endblock }}
+
+{{ block scripts }}
+<script>
+function llenarAleatorio() {
+  // Seleccionar radio aleatorio (1-4) para cada ítem
+  const nombres = new Set([...document.querySelectorAll('input[type=radio]')].map(r => r.name));
+  nombres.forEach(nombre => {
+    const val = Math.floor(Math.random() * 4) + 1;
+    const radio = document.querySelector(`input[name="${nombre}"][value="${val}"]`);
+    if (radio) radio.checked = true;
+  });
+  document.getElementById('staxi-form').submit();
+}
+</script>
+{{ endblock }}

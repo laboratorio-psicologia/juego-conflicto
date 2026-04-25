@@ -1,0 +1,235 @@
+{{ block title }}Ronda {{ ronda }} de {{ total_rondas }} – Fase de Comunicación{{ endblock }}
+
+{{ block styles }}
+<style>
+  .chat-box {
+    height: 300px; overflow-y: auto;
+    border: 1px solid #dee2e6; border-radius: .375rem;
+    padding: 10px; background: #f8f9fa;
+  }
+  .msg { margin-bottom: 8px; }
+  .msg .sender { font-weight: 600; font-size: .82rem; }
+  .msg.yo    .sender { color: #0d6efd; }
+  .msg.otro  .sender { color: #6c757d; }
+  .bubble {
+    display: inline-block; padding: 4px 10px;
+    border-radius: 12px; max-width: 85%; font-size: .92rem;
+  }
+  .msg.yo   .bubble { background: #cfe2ff; }
+  .msg.otro .bubble { background: #e9ecef; }
+
+  /* ── Pestañas ── */
+  .tab-btn {
+    position: relative;
+    border: none; background: none; padding: 6px 14px;
+    border-bottom: 3px solid transparent; cursor: pointer; font-size: .88rem;
+  }
+  .tab-btn.activo { border-bottom-color: #0d6efd; font-weight: 600; color: #0d6efd; }
+
+  /* ── Badge de mensajes no leídos ── */
+  .unread-badge {
+    position: absolute; top: 2px; right: 4px;
+    background: #dc3545; color: #fff;
+    font-size: .65rem; font-weight: 700; line-height: 1;
+    min-width: 16px; height: 16px;
+    border-radius: 8px; padding: 2px 4px;
+    display: none; /* oculto por defecto */
+  }
+
+  /* ── Destello de atención en la pestaña ── */
+  @keyframes tab-ping {
+    0%   { background: #fff3cd; }
+    50%  { background: #ffe69c; }
+    100% { background: transparent; }
+  }
+  .tab-btn.nuevo { animation: tab-ping .6s ease 3; }
+</style>
+{{ endblock }}
+
+{{ block content }}
+<div class="container-fluid" style="max-width:860px">
+
+  <!-- Cabecera con temporizador -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <span class="badge fs-6 px-3 py-2
+      {% if color_equipo == 'Azul' %}bg-primary{% else %}bg-danger{% endif %}">
+      Equipo {{ color_equipo }} – {{ nombre_jugador }}
+    </span>
+    <div class="text-center">
+      <div id="countdown" class="fw-bold fs-4 text-danger">{{ timer_segundos }}</div>
+      <div class="progress" style="width:140px;height:7px;">
+        <div id="timer-bar" class="progress-bar bg-danger" style="width:100%"></div>
+      </div>
+      <small class="text-muted">segundos restantes</small>
+    </div>
+  </div>
+
+  <!-- Pestañas -->
+  <div class="border-bottom mb-2 d-flex gap-1" id="tabs">
+    <button type="button" class="tab-btn activo" data-canal="grupo"
+            onclick="cambiarTab(this,'grupo')">
+      💬 Chat de equipo
+      <span class="unread-badge" id="badge-grupo"></span>
+    </button>
+    {% for c in companeros_data %}
+    <button type="button" class="tab-btn" data-canal="priv_{{ c.id }}"
+            onclick="cambiarTab(this,'priv_{{ c.id }}')">
+      🔒 Privado con {{ c.nombre }}
+      <span class="unread-badge" id="badge-priv_{{ c.id }}"></span>
+    </button>
+    {% endfor %}
+  </div>
+
+  <!-- Caja chat grupal -->
+  <div id="chat-grupo" class="chat-box mb-2">
+    {% for m in msgs_grupo %}
+    <div class="msg {% if m.sender_id == mi_id %}yo{% else %}otro{% endif %}">
+      <div class="sender">{{ m.sender_name }}</div>
+      <div class="bubble">{{ m.texto }}</div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- Cajas chat privado -->
+  {% for c in companeros_data %}
+  <div id="chat-priv_{{ c.id }}" class="chat-box mb-2" style="display:none;">
+    {% for m in c.mensajes %}
+    <div class="msg {% if m.sender_id == mi_id %}yo{% else %}otro{% endif %}">
+      <div class="sender">{{ m.sender_name }}</div>
+      <div class="bubble">{{ m.texto }}</div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endfor %}
+
+  <!-- Input -->
+  <div class="input-group mt-2">
+    <input id="msg-input" type="text" class="form-control"
+           placeholder="Escribe un mensaje y presiona Enter..." maxlength="300" autocomplete="off">
+    <button type="button" class="btn btn-primary" onclick="enviarMensaje()">Enviar</button>
+  </div>
+  <small class="text-muted">Los chats 🔒 privados solo los ve tu compañero/a.</small>
+  <div class="mt-2">
+    <button type="button" class="btn btn-sm btn-outline-secondary"
+            onclick="clearInterval(tick); document.querySelector('form').submit()">⏩ Saltar chat (debug)</button>
+  </div>
+</div>
+
+<script>
+  const MI_ID       = {{ mi_id }};
+  const TIMER_TOTAL = {{ timer_segundos }};
+  let canalActual   = 'grupo';
+  let segundos      = TIMER_TOTAL;
+
+  // Contador de no leídos por canal
+  const noLeidos = {};
+
+  // ── Timer ──────────────────────────────────────────────────────────────────
+  const cntEl = document.getElementById('countdown');
+  const barEl = document.getElementById('timer-bar');
+  const tick  = setInterval(() => {
+    segundos--;
+    cntEl.textContent = Math.max(0, segundos);
+    barEl.style.width = (Math.max(0, segundos) / TIMER_TOTAL * 100) + '%';
+    if (segundos <= 0) clearInterval(tick);
+  }, 1000);
+
+  // ── Tabs ───────────────────────────────────────────────────────────────────
+  function cambiarTab(btn, canal) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('activo'));
+    btn.classList.add('activo');
+    document.querySelectorAll('.chat-box').forEach(b => b.style.display = 'none');
+    const box = document.getElementById('chat-' + canal);
+    if (box) { box.style.display = 'block'; box.scrollTop = box.scrollHeight; }
+    canalActual = canal;
+    // Limpiar badge al abrir el canal
+    limpiarBadge(canal);
+  }
+
+  // ── Badge helpers ──────────────────────────────────────────────────────────
+  function incrementarBadge(canal) {
+    noLeidos[canal] = (noLeidos[canal] || 0) + 1;
+    const badge = document.getElementById('badge-' + canal);
+    if (badge) {
+      badge.textContent = noLeidos[canal];
+      badge.style.display = 'inline-block';
+    }
+    // Destello en la pestaña: añadir clase, quitar tras la animación con timeout
+    const btn = document.querySelector('[data-canal="' + canal + '"]');
+    if (btn) {
+      btn.classList.remove('nuevo');
+      void btn.offsetWidth; // forzar reflow para reiniciar la animación
+      btn.classList.add('nuevo');
+      setTimeout(() => btn.classList.remove('nuevo'), 2000); // 0.6s × 3 repeticiones + margen
+    }
+  }
+
+  function limpiarBadge(canal) {
+    noLeidos[canal] = 0;
+    const badge = document.getElementById('badge-' + canal);
+    if (badge) badge.style.display = 'none';
+  }
+
+  // ── Enviar ─────────────────────────────────────────────────────────────────
+  function enviarMensaje() {
+    const inp   = document.getElementById('msg-input');
+    const texto = inp.value.trim();
+    if (!texto) return;
+    inp.value = '';
+
+    if (canalActual === 'grupo') {
+      liveSend({ tipo: 'grupo', texto });
+    } else {
+      const partnerId = parseInt(canalActual.replace('priv_', ''));
+      liveSend({ tipo: 'privado', texto, partner_id: partnerId });
+    }
+  }
+
+  const msgInput = document.getElementById('msg-input');
+  if (msgInput) {
+    msgInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter') { e.preventDefault(); enviarMensaje(); }
+    });
+  }
+
+  // ── Recibir ────────────────────────────────────────────────────────────────
+  function liveRecv(data) {
+    let boxId, canal;
+    if (data.canal === 'grupo') {
+      boxId = 'chat-grupo';
+      canal = 'grupo';
+    } else {
+      const partnerId = (data.sender_id === MI_ID) ? data.partner_id : data.sender_id;
+      boxId = 'chat-priv_' + partnerId;
+      canal = 'priv_' + partnerId;
+    }
+    const box = document.getElementById(boxId);
+    if (!box) return;
+
+    const div = document.createElement('div');
+    div.className = 'msg ' + (data.sender_id === MI_ID ? 'yo' : 'otro');
+    div.innerHTML = `<div class="sender">${esc(data.sender_name)}</div>
+                     <div class="bubble">${esc(data.texto)}</div>`;
+    box.appendChild(div);
+
+    // Solo hacer scroll si el canal está visible
+    if (canal === canalActual) {
+      box.scrollTop = box.scrollHeight;
+    } else {
+      // Canal en segundo plano → badge, solo si el mensaje es de otro
+      if (data.sender_id !== MI_ID) {
+        incrementarBadge(canal);
+      }
+    }
+  }
+
+  function esc(t) {
+    return t.replace(/&/g,'&amp;').replace(/</g,'&lt;')
+            .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  // Scroll inicial
+  const chatGrupo = document.getElementById('chat-grupo');
+  if (chatGrupo) chatGrupo.scrollTop = 99999;
+</script>
+{{ endblock }}

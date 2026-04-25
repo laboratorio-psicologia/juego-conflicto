@@ -1,0 +1,80 @@
+{{ block title }}Ronda {{ ronda }} de {{ total_rondas }} – Estado Emocional{{ endblock }}
+
+{{ block styles }}
+<style>
+  .likert-row { display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
+  .likert-row input[type=radio] { display:none; }
+  .likert-row label {
+    width:42px; height:42px; display:flex; align-items:center; justify-content:center;
+    border:2px solid #dee2e6; border-radius:50%; cursor:pointer; font-weight:600;
+    transition: all .15s;
+  }
+  .likert-row input[type=radio]:checked + label {
+    background:#0d6efd; color:#fff; border-color:#0d6efd;
+  }
+  .likert-row label:hover { border-color:#0d6efd; color:#0d6efd; }
+</style>
+{{ endblock }}
+
+{{ block content }}
+<div class="container" style="max-width:680px">
+
+  <!-- Resultado del castigo -->
+  {% if castigos %}
+  <div class="card mb-4">
+    <div class="card-header fw-bold">Resultado del castigo</div>
+    <div class="card-body">
+      {% for c in castigos %}
+      <div class="d-flex justify-content-between align-items-center mb-1">
+        <span>{{ c.nombre }}{% if c.nombre == nombre_jugador %} <span class="badge bg-warning text-dark">Tú</span>{% endif %}</span>
+        {% if c.fue_castigado %}
+          <span class="badge bg-danger">Castigado (−5 fichas)</span>
+        {% else %}
+          <span class="text-muted small">Sin castigo</span>
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <p>Responde honestamente cómo te sientes <strong>en este momento</strong>.</p>
+  <p class="text-muted small">Escala: 1 = Nada enojado/a &nbsp;·&nbsp; 7 = Extremadamente enojado/a</p>
+
+  <form method="post">
+
+    {% for p in preguntas %}
+    <div class="mb-4">
+      <div class="fw-semibold mb-2">{{ p.etiqueta }}</div>
+      <div class="likert-row">
+        <span class="text-muted small me-1">Nada (1)</span>
+        {% for v in escala %}
+        <span>
+          <input type="radio" name="{{ p.campo }}" id="{{ p.campo }}_{{ v }}" value="{{ v }}">
+          <label for="{{ p.campo }}_{{ v }}">{{ v }}</label>
+        </span>
+        {% endfor %}
+        <span class="text-muted small ms-1">(7) Mucho</span>
+      </div>
+    </div>
+    {% endfor %}
+
+    <div class="d-flex gap-2 mt-2">
+      {{ next_button }}
+      <button type="button" class="btn btn-outline-secondary" onclick="llenarAleatorio()">🎲 Aleatorio</button>
+    </div>
+  </form>
+
+<script>
+function llenarAleatorio() {
+  const nombres = new Set([...document.querySelectorAll('input[type=radio]')].map(r => r.name));
+  nombres.forEach(nombre => {
+    const val = Math.floor(Math.random() * 7) + 1;
+    const radio = document.querySelector(`input[name="${nombre}"][value="${val}"]`);
+    if (radio) radio.checked = true;
+  });
+  document.querySelector('form').submit();
+}
+</script>
+</div>
+{{ endblock }}

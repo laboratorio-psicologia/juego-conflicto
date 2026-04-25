@@ -1,0 +1,143 @@
+{{ block title }}Instrucciones – Parte 2 de 2{{ endblock }}
+
+{{ block content }}
+<div class="container" style="max-width:780px">
+
+  <div class="alert alert-info mb-4">
+    <strong>Parte 2 de 2</strong> — Ganancias, castigo y comunicación. Lee con atención; hay un ejemplo completo al final.
+  </div>
+
+  <!-- ── Ganancias ─────────────────────────────────────────────────────── -->
+  <h5 class="border-bottom pb-1 mb-3">¿Cómo se calculan las fichas — y los tickets del sorteo?</h5>
+  <p>
+    Recuerda: tus fichas acumuladas al final del juego se traducen directamente en
+    <strong>tickets para el sorteo</strong>. Más fichas = más tickets = más chances de ganar el premio económico.
+    Por eso importa tanto ganar rondas <em>y</em> ser el que más aporta dentro del equipo.
+  </p>
+  <p>
+    Si tu equipo gana la ronda, se reparten <strong>{{ premio }} fichas</strong> entre los
+    3 miembros del equipo. La proporción depende de cuánto contribuiste personalmente
+    a <em>los frentes que ganó tu equipo</em>. Quien más aportó a esos frentes,
+    más recibe del premio.
+  </p>
+  <div class="card bg-light mb-3">
+    <div class="card-body">
+      <p class="fw-bold mb-2">📌 Ejemplo de reparto:</p>
+      <p class="small mb-1">Tu equipo ganó los frentes <strong>A y C</strong>. Las contribuciones de cada jugador fueron:</p>
+      <table class="table table-sm table-bordered">
+        <thead class="table-secondary">
+          <tr><th>Jugador</th><th>Aportó al A</th><th>Aportó al C</th><th>Total aportado</th><th>Premio (de {{ premio }})</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>J1 (tú)</td><td>8</td><td>5</td><td><strong>13</strong></td><td>≈ 20.6 fichas</td></tr>
+          <tr><td>J2</td><td>7</td><td>4</td><td><strong>11</strong></td><td>≈ 17.5 fichas</td></tr>
+          <tr><td>J3</td><td>4</td><td>2</td><td><strong>6</strong></td><td>≈ 9.5 fichas</td></tr>
+          <tr class="table-light"><td colspan="3"><em>Total contribuido a los frentes ganados</em></td><td><strong>30</strong></td><td>= {{ premio }} fichas</td></tr>
+        </tbody>
+      </table>
+      <p class="mb-0 small text-muted">Fórmula: (tu aporte ÷ total del equipo en frentes ganados) × {{ premio }}</p>
+    </div>
+  </div>
+
+  <p>
+    Si tu equipo <strong>pierde</strong> la ronda: no hay premio grupal.
+    Solo conservas la mitad de tu ahorro personal. Por eso vale la pena coordinar con tu equipo.
+  </p>
+  <div class="alert alert-warning py-2 small">
+    <strong>🎟️ Recuerda:</strong> tus fichas acumuladas a lo largo de las {{ rondas }} rondas se
+    convierten en tickets de sorteo al final — pero <em>solo si tu equipo ganó más rondas que el rival</em>.
+    Cada ficha que acumulas es una fracción de los 100 tickets disponibles para el equipo ganador.
+  </div>
+
+  <!-- ── Castigo ────────────────────────────────────────────────────────── -->
+  <h5 class="border-bottom pb-1 mb-3">Mecanismo de castigo</h5>
+  <p>
+    Al final de cada ronda, antes de ver los resultados finales, puedes <strong>votar para
+    penalizar a un compañero/a</strong> de tu mismo equipo. Las reglas son:
+  </p>
+  <ul>
+    <li>Votar te cuesta <strong>{{ costo_castigo }} ficha</strong> (la pierdes aunque no pase nada).</li>
+    <li>Si <strong>2 de los 3 jugadores</strong> del equipo votan contra la misma persona,
+        esa persona pierde <strong>{{ penalizacion }} fichas</strong>.</li>
+    <li>Si solo 1 persona vota, no hay castigo — pero quien votó igual pierde su ficha.</li>
+    <li>También puedes elegir <em>no votar</em>, sin ningún costo.</li>
+  </ul>
+  <div class="alert alert-warning">
+    <strong>¿Para qué sirve el castigo?</strong> Es una forma de sancionar a compañeros/as que no
+    cooperaron como dijeron que iban a hacerlo. Úsalo o no según tu criterio — nadie te obliga.
+  </div>
+
+  <!-- ── Chat ───────────────────────────────────────────────────────────── -->
+  <h5 class="border-bottom pb-1 mb-3">El chat: coordinación y privacidad</h5>
+  <p>
+    Antes de cada decisión tienes <strong>3 minutos de chat</strong> con tu equipo. Hay dos tipos:
+  </p>
+  <div class="row g-2 mb-3">
+    <div class="col-md-6">
+      <div class="card h-100">
+        <div class="card-body">
+          <h6>💬 Chat grupal</h6>
+          <p class="small mb-0">Lo leen los 3 miembros de tu equipo. Útil para coordinar estrategia abierta.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card h-100">
+        <div class="card-body">
+          <h6>🔒 Chat privado</h6>
+          <p class="small mb-0">Solo tú y un compañero/a lo ven. Útil para acuerdos en secreto. El tercer miembro no sabe qué dijiste.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="alert alert-secondary">
+    <strong>Importante:</strong> los acuerdos del chat <em>no son vinculantes</em>. Puedes
+    prometer una cosa y hacer otra en la fase de decisión. Lo que hagas depende completamente de ti.
+  </div>
+
+  <!-- ── Ejemplo completo ───────────────────────────────────────────────── -->
+  <h5 class="border-bottom pb-1 mb-3">Ejemplo completo de una ronda</h5>
+  <div class="card border-secondary mb-3">
+    <div class="card-body">
+      <ol class="mb-0">
+        <li class="mb-2"><strong>Chat:</strong> J1 escribe en el grupal "propongo ir todos al frente B". J2 y J3 están de acuerdo en el chat. J2 también le escribe en privado a J3 "en realidad yo voy a meter todo al A".</li>
+        <li class="mb-2"><strong>Decisión (en secreto):</strong>
+          <ul class="small">
+            <li>J1 (Azul): 12 al B, 0 al A, 0 al C, 3 de ahorro</li>
+            <li>J2 (Azul): 0 al B, 13 al A, 0 al C, 2 de ahorro</li>
+            <li>J3 (Azul): 8 al B, 3 al A, 2 al C, 2 de ahorro</li>
+          </ul>
+          Total Azul: A=16, B=20, C=2
+        </li>
+        <li class="mb-2"><strong>Rival (Rojo):</strong> A=10, B=8, C=22</li>
+        <li class="mb-2"><strong>Resultado:</strong> Azul gana A y B → <strong>Azul gana la ronda</strong></li>
+        <li class="mb-2"><strong>Premio:</strong> 45 fichas se reparten entre J1, J2, J3 según su aporte a los frentes A y B ganados. J2 apostó más al A, así que recibe proporcionalmente más.</li>
+        <li><strong>Castigo:</strong> J3 vota para castigar a J2 (costó 1 ficha). J1 no vota. Solo 1 voto → no hay castigo, pero J3 pierde su ficha igual.</li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- ── Resumen final ──────────────────────────────────────────────────── -->
+  <div class="alert alert-success">
+    <h6 class="alert-heading">✅ Lo más importante en resumen:</h6>
+    <ul class="mb-0">
+      <li>❌ <strong>Si tu equipo pierde:</strong> quedas eliminado/a del sorteo. No importa cuánto acumulaste individualmente.</li>
+      <li>🏆 <strong>Si tu equipo gana:</strong> entras al sorteo. Tu equipo se rankea contra todos los equipos ganadores de otras sesiones — más puntaje grupal = mejor posición = más tickets.</li>
+      <li>🎟️ <strong>Tu parte de los tickets:</strong> los tickets de tu equipo se reparten entre los 3 miembros proporcionalmente a sus fichas individuales. Ser primero dentro del equipo importa.</li>
+      <li>Tienes <strong>{{ tokens }} fichas</strong> para repartir libremente en cada ronda entre los 3 frentes y tu ahorro.</li>
+      <li>El chat sirve para coordinar, pero no estás obligado/a a cumplir lo que prometes.</li>
+      <li>El castigo es opcional y tiene un costo para quien vota.</li>
+    </ul>
+  </div>
+
+  <div class="d-flex justify-content-between align-items-center mt-3">
+    <span class="text-muted small">Página 2 de 2 — A continuación: una ronda de práctica</span>
+    <div class="d-flex gap-2">
+      <button type="button" class="btn btn-outline-secondary btn-sm"
+              onclick="document.querySelector('#form').submit()">⏩ Saltar (debug)</button>
+      {{ next_button }}
+    </div>
+  </div>
+
+</div>
+{{ endblock }}

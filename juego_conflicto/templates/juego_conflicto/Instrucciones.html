@@ -1,0 +1,184 @@
+{{ block title }}Instrucciones – Parte 1 de 2{{ endblock }}
+
+{{ block content }}
+<div class="container" style="max-width:780px">
+
+  <div class="alert alert-primary mb-4">
+    <h4 class="alert-heading mb-1">👋 Bienvenido/a al Juego de los Campos de Batalla</h4>
+    <p class="mb-0">Lee estas instrucciones con calma. Hay dos páginas en total — luego podrás practicar antes de empezar.</p>
+  </div>
+
+  <!-- ── Recompensa (lo primero y lo más importante) ────────────────────── -->
+  <div class="card border-warning mb-4">
+    <div class="card-header bg-warning text-dark fw-bold">🎟️ ¿Cómo se gana el premio económico?</div>
+    <div class="card-body">
+      <p class="mb-3">
+        Al terminar el juego participas en un <strong>sorteo real con premio económico</strong>.
+        Este estudio tiene muchas sesiones: equipo 1 vs equipo 2, equipo 3 vs equipo 4, y así.
+        Los tickets del sorteo dependen de <strong>dos niveles, en este orden</strong>:
+      </p>
+
+      <div class="row g-2 mb-3">
+        <div class="col-md-6">
+          <div class="card border-danger h-100">
+            <div class="card-body">
+              <h6 class="text-danger fw-bold">① Primero: que tu equipo gane</h6>
+              <p class="small mb-0">
+                El equipo que <strong>pierde su sesión queda eliminado</strong> del sorteo,
+                sin importar cuántas fichas haya acumulado individualmente.
+                Sin victoria grupal, no hay premio.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card border-primary h-100">
+            <div class="card-body">
+              <h6 class="text-primary fw-bold">② Después: ranking entre ganadores</h6>
+              <p class="small mb-0">
+                Todos los equipos ganadores se rankean por su <strong>puntaje total de sesión</strong>
+                (suma de fichas de los 3 jugadores). El 1° recibe más tickets que el 2°,
+                el 2° más que el 3°, y así hasta el último ganador.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card border-success mb-3">
+        <div class="card-body">
+          <h6 class="text-success fw-bold">③ Finalmente: tu lugar dentro del equipo</h6>
+          <p class="small mb-0">
+            Los tickets asignados a tu equipo se reparten entre sus 3 miembros
+            <strong>proporcionalmente a las fichas acumuladas individualmente</strong>.
+            Quien más aportó recibe más tickets que el segundo, y el segundo más que el tercero.
+          </p>
+        </div>
+      </div>
+
+      <div class="card bg-light border">
+        <div class="card-body py-2 small">
+          <strong>📌 Ejemplo:</strong> hay 6 sesiones en el estudio → 6 equipos ganadores.
+          El 1° recibe la mayor parte de los tickets, con una función que cae linealmente
+          hasta el 6° (todos los ganadores reciben algo, pero los mejores reciben mucho más).
+          <br><br>
+          Dentro del equipo ganador en 1° lugar: si J1 acumuló 148 fichas, J2=112 y J3=90
+          (total=350), J1 recibe el <strong>42%</strong> de los tickets de ese equipo,
+          J2 el <strong>32%</strong> y J3 el <strong>26%</strong>.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Contexto ───────────────────────────────────────────────────────── -->
+  <h5 class="border-bottom pb-1 mb-3">¿De qué se trata el juego?</h5>
+  <p>
+    Participas en un juego de estrategia en equipo. Formas parte de un
+    <strong>equipo de 3 jugadores</strong> — identificado por un color (Azul o Rojo) —
+    que se enfrenta a otro equipo de 3 jugadores durante <strong>{{ rondas }} rondas</strong>.
+    En cada ronda, los dos equipos compiten en <strong>3 frentes de batalla (A, B y C)</strong>.
+  </p>
+  <p>
+    El objetivo es acumular la mayor cantidad de <strong>fichas</strong> posible.
+    Las fichas se obtienen ganando rondas y conservando ahorros. <strong>Tus fichas acumuladas
+    al final determinan tu posición en el ranking y, por tanto, cuántos tickets del sorteo recibes.</strong>
+  </p>
+
+  <!-- ── Estructura ─────────────────────────────────────────────────────── -->
+  <h5 class="border-bottom pb-1 mb-3">Estructura de cada ronda</h5>
+  <div class="row g-3 mb-3">
+    <div class="col-md-4">
+      <div class="card h-100 border-primary">
+        <div class="card-body text-center">
+          <div class="fs-2 mb-2">💬</div>
+          <h6 class="card-title">1. Chat (3 min)</h6>
+          <p class="card-text small">Habla con tus compañeros/as. Pueden coordinar estrategia en el chat grupal o en chats privados.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card h-100 border-warning">
+        <div class="card-body text-center">
+          <div class="fs-2 mb-2">⚔️</div>
+          <h6 class="card-title">2. Decisión (1 min)</h6>
+          <p class="card-text small">Recibes <strong>{{ tokens }} fichas</strong>. Repartes en secreto entre los 3 frentes y tu ahorro personal.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card h-100 border-success">
+        <div class="card-body text-center">
+          <div class="fs-2 mb-2">📊</div>
+          <h6 class="card-title">3. Resultados + Emociones</h6>
+          <p class="card-text small">Ves qué ocurrió, puedes votar para penalizar a un compañero/a, y reportas tu estado emocional.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Los frentes ────────────────────────────────────────────────────── -->
+  <h5 class="border-bottom pb-1 mb-3">¿Cómo funcionan los frentes?</h5>
+  <p>
+    Cada frente (A, B y C) es una competencia independiente. El equipo que ponga
+    <strong>más fichas en un frente, gana ese frente</strong>.
+    El equipo que gane <strong>2 de los 3 frentes</strong> gana la ronda.
+  </p>
+
+  <div class="card bg-light mb-3">
+    <div class="card-body">
+      <p class="fw-bold mb-2">📌 Ejemplo rápido:</p>
+      <table class="table table-sm table-bordered mb-0">
+        <thead class="table-dark text-white">
+          <tr><th>Frente</th><th>Equipo Azul (total)</th><th>Equipo Rojo (total)</th><th>Ganador</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>A</strong></td><td>22</td><td>15</td><td>🔵 Azul</td></tr>
+          <tr><td><strong>B</strong></td><td>8</td><td>18</td><td>🔴 Rojo</td></tr>
+          <tr><td><strong>C</strong></td><td>15</td><td>12</td><td>🔵 Azul</td></tr>
+        </tbody>
+      </table>
+      <p class="mt-2 mb-0 text-success fw-bold">→ Azul gana la ronda (2 de 3 frentes).</p>
+    </div>
+  </div>
+
+  <!-- ── Ahorro ─────────────────────────────────────────────────────────── -->
+  <h5 class="border-bottom pb-1 mb-3">Tu ahorro personal</h5>
+  <p>
+    Las fichas que no mandas a ningún frente quedan como tu <strong>ahorro personal</strong>.
+    Lo que pase con ese ahorro depende del resultado de la ronda:
+  </p>
+  <div class="row g-2 mb-3">
+    <div class="col-md-6">
+      <div class="card border-success">
+        <div class="card-body">
+          <h6 class="text-success">✅ Si tu equipo GANA</h6>
+          <p class="mb-0">Conservas el <strong>100%</strong> de tu ahorro.</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card border-danger">
+        <div class="card-body">
+          <h6 class="text-danger">❌ Si tu equipo PIERDE</h6>
+          <p class="mb-0">Solo conservas el <strong>50%</strong> de tu ahorro.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="alert alert-secondary">
+    <strong>Recuerda:</strong> tienes <strong>{{ tokens }} fichas</strong> para repartir en cada ronda.
+    Lo que no asignas a frentes va automáticamente al ahorro. La suma siempre debe ser exactamente {{ tokens }}.
+  </div>
+
+  <div class="d-flex justify-content-between align-items-center mt-3">
+    <span class="text-muted small">Página 1 de 2</span>
+    <div class="d-flex gap-2">
+      <button type="button" class="btn btn-outline-secondary btn-sm"
+              onclick="document.querySelector('#form').submit()">⏩ Saltar (debug)</button>
+      {{ next_button }}
+    </div>
+  </div>
+
+</div>
+{{ endblock }}
